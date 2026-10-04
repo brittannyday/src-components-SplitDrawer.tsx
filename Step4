@@ -1,0 +1,84 @@
+import React, { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X, Maximize2, Minimize2, Sparkles } from 'lucide-react';
+
+interface SplitDrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  activeCardData: { title: string; subtitle: string } | null;
+}
+
+export const SplitDrawer: React.FC<SplitDrawerProps> = ({ isOpen, onClose, activeCardData }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) setIsExpanded(false);
+  }, [isOpen]);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-40 bg-black/30 backdrop-blur-xs" onClick={onClose}
+          />
+          
+          <motion.div
+            initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }}
+            transition={{ type: 'spring', damping: 30, stiffness: 240 }}
+            className={`fixed top-0 right-0 h-full z-40 border-l border-white/[0.08] bg-slate-950/70 backdrop-blur-2xl shadow-2xl p-8 flex flex-col transition-all duration-500 transform-gpu ${
+              isExpanded ? 'w-full md:w-[75vw]' : 'w-full md:w-[460px]'
+            }`}
+          >
+            <div className="flex items-center justify-between border-b border-white/[0.06] pb-4 mb-6">
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => setIsExpanded(!isExpanded)}
+                  className="p-2 rounded-lg bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition hidden md:block"
+                >
+                  {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                </button>
+                <span className="text-xs uppercase tracking-widest font-mono text-slate-400">Workspace Layer</span>
+              </div>
+              <button onClick={onClose} className="p-2 rounded-lg bg-white/5 text-slate-300 hover:text-white hover:bg-white/10 transition">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto">
+              {activeCardData ? (
+                <div className="space-y-6">
+                  <div>
+                    <span className="text-xs font-semibold text-indigo-400 tracking-wider uppercase block mb-1">{activeCardData.subtitle}</span>
+                    <h2 className="text-3xl font-extrabold tracking-tight text-white">{activeCardData.title}</h2>
+                  </div>
+                  <p className="text-slate-300 leading-relaxed text-sm">
+                    This inline canvas architectural layer smoothly shifts its footprint relative to user focus parameters.
+                  </p>
+                  <div className="p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] space-y-4">
+                    <h4 className="text-xs uppercase tracking-wider font-mono text-indigo-300 flex items-center gap-2">
+                      <Sparkles className="w-3.5 h-3.5" /> Real-time Node Diagnostics
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="bg-slate-900/50 p-3 rounded-lg border border-white/5">
+                        <span className="text-[10px] text-slate-400 block uppercase font-mono">Render Physics</span>
+                        <span className="text-sm font-semibold text-white">Hardware Accel</span>
+                      </div>
+                      <div className="bg-slate-900/50 p-3 rounded-lg border border-white/5">
+                        <span className="text-[10px] text-slate-400 block uppercase font-mono">Layout Rule</span>
+                        <span className="text-sm font-semibold text-white">@[280px] Fluid</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-slate-400 text-sm py-12 text-center">No active node target.</div>
+              )}
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
